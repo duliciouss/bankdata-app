@@ -2,11 +2,11 @@
     <flux:heading size="xl" level="1">{{ __('Pencarian Data') }}</flux:heading>
     <flux:subheading size="lg" class="mb-6">
         {{ __('Silakan ketikan kata atau kalimat yang akan dicari pada form dibawah.') }}</flux:subheading>
-    <flux:separator variant="subtle" />
+    <flux:separator variant="subtle" class="mb-4" />
     <div class="space-y-6">
         <flux:field label="Cari Pengguna">
-            <flux:input wire:model.live="query" placeholder="..." />
-            <div wire:loading.flex class="text-sm text-blue-500">Mencari...</div>
+            <flux:input wire:model.debounce.250ms="query" placeholder="Cari pengguna..." />
+            <div wire:loading.flex class="text-sm">Mencari...</div>
         </flux:field>
 
         @if (strlen($query) > 2)
