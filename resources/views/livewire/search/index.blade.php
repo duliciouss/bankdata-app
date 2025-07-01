@@ -5,7 +5,7 @@
     <flux:separator variant="subtle" class="mb-4" />
     <div class="space-y-6">
         <flux:field label="Cari Pengguna">
-            <flux:input wire:model.debounce.250ms="query" placeholder="Cari pengguna..." />
+            <flux:input wire:model.live.debounce.250ms="query" placeholder="Cari pengguna..." />
             <div wire:loading.flex class="text-sm">Mencari...</div>
         </flux:field>
 

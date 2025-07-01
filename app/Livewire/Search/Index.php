@@ -13,6 +13,12 @@ class Index extends Component
 
     public $results = [];
 
+    public function mount($query = '')
+    {
+        $this->query = $query;
+        $this->results = [];
+    }
+
     public function updatedQuery()
     {
         if (strlen($this->query) > 2) {
