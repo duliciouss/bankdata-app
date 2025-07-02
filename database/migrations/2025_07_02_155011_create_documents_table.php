@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name');
             $table->string('category');
+            $table->text('raw_content');
             $table->text('content');
             $table->string('file');
             $table->string('thumbnail');

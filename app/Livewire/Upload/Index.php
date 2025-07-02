@@ -2,11 +2,14 @@
 
 namespace App\Livewire\Upload;
 
+use App\Models\Document;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use App\Services\FileExtractService;
+use App\Services\PdfThumbnailService;
+use Illuminate\Support\Facades\Auth;
 
 class Index extends Component
 {
@@ -52,6 +55,8 @@ class Index extends Component
             $fullPath = Storage::disk('local')->path($docsPath);
             Log::info('File disimpan sementara di: ' . $fullPath);
 
+            $thumbnailPath = 'thiings-folder.png';
+
             // Periksa apakah file benar-benar ada di temp path
             if (!file_exists($fullPath)) {
                 Log::error('Gagal menyimpan file sementara ke: ' . $fullPath);
@@ -61,22 +66,29 @@ class Index extends Component
 
             // Kirim ke API ekstraksi
             Log::info('Mencoba mengirim file ke API ekstraksi...');
-            $response = Http::attach(
-                'file',
-                file_get_contents($fullPath),
+            $response = app(FileExtractService::class)->sendToExtractor(
+                $fullPath,
                 $this->file->getClientOriginalName()
-            )->withHeaders([
-                'X-API-Key' => 'kand1',
-            ])->post('http://localhost:8000/extract');
+            );
 
             // Hasil
             if ($response->successful()) {
-                Log::info('Ekstraksi API berhasil. Respon: ' . $response->body());
-                session()->flash('success', 'Ekstraksi berhasil: ' . $response->body());
+                $data = $response->json();
+
+                Document::create([
+                    'name' => pathinfo($this->file->getClientOriginalName(), PATHINFO_FILENAME),
+                    'category' => $data['category'] ?? 'Lainnya',
+                    // 'raw_content' => $data['raw'] ?? '',
+                    'content' => $data['text'] ?? '',
+                    'file' => $docsPath,
+                    'thumbnail' => $thumbnailPath,
+                    'user_id' => Auth::user()->id,
+                ]);
+
                 $this->reset('file');
+                session()->flash('success', 'Ekstraksi & penyimpanan berhasil.');
             } else {
-                Log::error('Ekstraksi API gagal. Status: ' . $response->status() . ', Respon: ' . $response->body());
-                session()->flash('error', 'Gagal: ' . $response->status() . ' - ' . $response->body());
+                session()->flash('error', 'Gagal ekstraksi: ' . $response->status());
             }
         } catch (\Illuminate\Validation\ValidationException $e) {
             Log::warning('Validasi file gagal: ' . $e->getMessage(), ['errors' => $e->errors()]);
