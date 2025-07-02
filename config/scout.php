@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Document;
 use App\Models\User;
 
 return [
@@ -195,6 +196,22 @@ return [
                 ],
                 'search-parameters' => [
                     'query_by' => 'name'
+                ],
+            ],
+            Document::class => [
+                'collection-schema' => [
+                    'fields' => [
+                        ['name' => 'id', 'type' => 'string'], // UUID
+                        ['name' => 'name', 'type' => 'string'],
+                        ['name' => 'category', 'type' => 'string'],
+                        ['name' => 'content', 'type' => 'string'],
+                        ['name' => 'user_id', 'type' => 'int32'],
+                        ['name' => 'created_at', 'type' => 'int64'], // pastikan dikonversi ke timestamp
+                    ],
+                    'default_sorting_field' => 'created_at',
+                ],
+                'search-parameters' => [
+                    'query_by' => 'name,category,content',
                 ],
             ],
         ],

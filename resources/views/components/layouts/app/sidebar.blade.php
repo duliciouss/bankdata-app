@@ -14,13 +14,14 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
-                    <flux:navlist.item icon="link" :href="route('search.index')" :current="request()->routeIs('search.index')" wire:navigate>{{ __('Pencarian Data') }}</flux:navlist.item>
+                    <flux:navlist.item icon="arrow-up-tray" :href="route('upload.index')" :current="request()->routeIs('upload.index')" wire:navigate>{{ __('Unggah') }}</flux:navlist.item>
+                    <flux:navlist.item icon="magnifying-glass" :href="route('search.index')" :current="request()->routeIs('search.index')" wire:navigate>{{ __('Pencarian Dokumen') }}</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
 
-                      <!-- Desktop User Menu -->
+            <!-- Desktop User Menu -->
             <flux:dropdown class="hidden lg:block" position="bottom" align="start">
                 <flux:profile
                     :name="auth()->user()->name"
