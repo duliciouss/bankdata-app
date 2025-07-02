@@ -8,6 +8,7 @@ use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\Services\FileExtractService;
+use App\Services\GeminiService;
 use App\Services\PdfThumbnailService;
 use Illuminate\Support\Facades\Auth;
 
@@ -75,11 +76,19 @@ class Index extends Component
             if ($response->successful()) {
                 $data = $response->json();
 
+                // Ekstrak raw_content dari hasil API eksternal
+                $rawContent = $data['text'] ?? '';
+
+                // Kirim ke GeminiService untuk proses FTS-friendly content
+                $geminiService = app(GeminiService::class);
+                $processedContent = $geminiService->extractTextForFTS($rawContent);
+
                 Document::create([
                     'name' => pathinfo($this->file->getClientOriginalName(), PATHINFO_FILENAME),
+                    'name' => pathinfo($this->file->getClientOriginalName(), PATHINFO_FILENAME),
                     'category' => $data['category'] ?? 'Lainnya',
-                    // 'raw_content' => $data['raw'] ?? '',
-                    'content' => $data['text'] ?? '',
+                    'raw_content' => $rawContent,
+                    'content' => $processedContent,
                     'file' => $docsPath,
                     'thumbnail' => $thumbnailPath,
                     'user_id' => Auth::user()->id,
